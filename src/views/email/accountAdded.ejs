@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Account Activation</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        color: #333;
+        background-color: #fff;
+        padding: 20px;
+      }
+      .email-container {
+        border: 1px solid #007bff;
+        padding: 15px;
+        border-radius: 5px;
+      }
+      a {
+        color: #007bff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <h4>Welcome to Meal card</h4>
+      <p>Hello <%= firstname %>,</p>
+      <p>Your account is ready to use. Here are your login details:</p>
+      <p>
+        <strong>Username:</strong> <%= email %><br />
+        <strong>Password:</strong> <%= password %>
+      </p>
+      <p>
+        Please
+        <a href="resetLink">change your password</a> after logging in.
+      </p>
+      <p>Access your account: <a href="https://www.youtube.com/">Login</a></p>
+      <p>If you need help, contact us at here.</p>
+      <p>Regards,<br />name<br />UR</p>
+    </div>
+  </body>
+</html>
