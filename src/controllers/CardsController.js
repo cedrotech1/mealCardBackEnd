@@ -13,7 +13,7 @@ import {
   
 } from "../services/CardsService";
 import {getallUsers} from "../services/userService";
-import {getAllRestaurentes} from "../services/restaurentService";
+import {getAllRestaurentes} from "../services/RestaurentService";
 import {  getAllCategories} from "../services/categoriesService";
 
 
