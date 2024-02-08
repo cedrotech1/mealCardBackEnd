@@ -10,7 +10,7 @@ import {
   deactivateResto,
   
 
-} from "../services/restaurentService";
+} from "../services/RestaurentService";
 import imageUploader from "../helpers/imageUplouder";
 
 
