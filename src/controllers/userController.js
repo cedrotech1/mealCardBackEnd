@@ -119,13 +119,13 @@ export const addCustomer = async (req, res) => {
     }
   
     // Validate if the password is strong
-    const strongPasswordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{8,})/;
-    if (!strongPasswordRegex.test(password)) {
-      return res.status(400).json({
-        success: false,
-        message: "Password must be at least 8 characters long and include a symbol and a capital letter",
-      });
-    }
+    // const strongPasswordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{8,})/;
+    // if (!strongPasswordRegex.test(password)) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Password must be at least 8 characters long and include a symbol and a capital letter",
+    //   });
+    // }
     // Other validation checks for firstname, lastname, email, phone... varidate if it is strong password include atleast 8 characters symbol and capital letter and display messages for errors
 
     if (!(req.body.role === "customer" || req.body.role === "restaurentadmin")) {
@@ -513,22 +513,7 @@ export const deactivateOneUser = async (req, res) => {
         message: "User not found",
       });
     }
-    if (existingUser.role === "superadmin" && req.user.role !== "root") {
-      return res.status(401).json({
-        success: false,
-        message: "Not authorized",
-      });
-    }
-    if (
-      existingUser.role === "systemcampusadmin" &&
-      req.user.role !== "superadmin"
-    ) {
-      return res.status(401).json({
-        success: false,
-        message: "Not authorized",
-      });
-    }
-
+ 
     const user = await deactivateUser(req.params.id);
     if (!user) {
       return res.status(404).json({
