@@ -22,12 +22,12 @@ module.exports = (sequelize, DataTypes) => {
       gender: DataTypes.STRING,
       address: DataTypes.STRING,
       image:DataTypes.STRING,
+      code:DataTypes.STRING,
     },
     {
       sequelize,
       modelName: "Users",
     }
   );
-
   return User;
 };

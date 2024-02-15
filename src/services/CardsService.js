@@ -41,7 +41,7 @@ export const Cardsfor1x = async (rest, id) => {
           model: users,
           as: "cardUser",
           where: { role: "customer", },
-          attributes: ["id", "firstname", "lastname", "email", "phone"],
+          attributes: ["id", "firstname", "lastname", "email", "phone", "address"],
           required: false, 
         },
         {
@@ -83,7 +83,7 @@ export const getAllCardses = async () => {
           model: users,
           as: "cardUser",
           where: { role: "customer" },
-          attributes: ["id", "firstname", "lastname", "email", "phone"],
+          attributes: ["id", "firstname", "lastname", "email", "phone","address"],
           required: false, 
         },
         {
@@ -166,7 +166,7 @@ export const getOneCardsWithDetails = async (id) => {
           model: users,
           as: "cardUser",
           where: { role: "customer" },
-          attributes: ["id", "firstname", "lastname", "email", "phone","image"],
+          attributes: ["id", "firstname", "lastname", "email", "phone","image","address"],
           required: false, 
         },
         {

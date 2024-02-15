@@ -152,7 +152,6 @@ export const useCardController = async (req, res) => {
     const formattedHours = (hours % 12) || 12; 
     const formattedMinutes = currentDate.getMinutes().toString().padStart(2, '0');
     const formattedSeconds = currentDate.getSeconds().toString().padStart(2, '0');
-    
     const year = currentDate.getFullYear();
     const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
     const day = currentDate.getDate().toString().padStart(2, '0');
