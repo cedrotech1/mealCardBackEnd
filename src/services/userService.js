@@ -164,3 +164,31 @@ export const deactivateUser = async (id) => {
   }
   return null;
 };
+
+
+export const updateUserCode = async (email, user) => {
+  const userToUpdate = await users.findOne(
+    { where: { email } },
+    { attributes: { exclude: ["password"] } }
+  );
+  if (userToUpdate) {
+    await users.update(user, { where: { email } });
+    return user;
+  }
+  return null;
+};
+export const getUserByCode = async (email,code) => {
+  try {
+    const user = await users.findOne(
+      {
+        where: { code: code ,email:email},
+      }
+    );
+
+    return user;
+  } catch (error) {
+    // Handle errors here
+    console.error("Error fetching user:", error);
+    throw error;
+  }
+};

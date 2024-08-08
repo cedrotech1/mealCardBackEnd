@@ -84,12 +84,7 @@ export const getAllRestaurentes = async () => {
                 },
               ],
             },
-
-
           ],
-
-
-
         },
         {
           model: users,

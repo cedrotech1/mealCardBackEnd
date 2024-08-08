@@ -11,7 +11,9 @@ import {
   deactivateUser,
   GetUserPassword,
   getallUsers,
-  getUserByPhone
+  getUserByPhone,
+  getUserByCode,
+  updateUserCode
 } from "../services/userService";
 import imageUploader from "../helpers/imageUplouder";
 
@@ -381,39 +383,26 @@ export const getOneUser = async (req, res) => {
 };
 
 export const updateOneUser = async (req, res) => {
-
-
   try {
+    let image; 
+    if (req.files && req.files.image) {
+      try {
+        // Upload the image and get the image URL
+        image = await imageUploader(req);
 
-    // const userExist = await getUserByEmail(req.body.email);
-    // if (userExist) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "Email already exists",
-    //   });
-    // }
-    // const Exist = await getUserByPhone(req.body.phone);
-    // if (Exist) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "your Phone number already exists",
-    //   });
-    // }
-    if (req.files) {
-      const image = await imageUploader(req);
-      req.body.image = image.url;
-      console.log(req.body.image);
+        // Check if image upload failed or if image URL is missing
+        if (!image || !image.url) {
+          throw new Error('Upload failed or image URL missing');
+        }
+
+        // Assign the image URL to req.body.image
+        req.body.image = image.url;
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        // Handle error appropriately
+      }
     }
-
-    // if (!req.body.image) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "you can not ",
-    //   });
-    // }
-    // else{
-    //   console.log('noo')
-    // }
+    console.log(req.body.image)
     const user = await updateUser(req.params.id, req.body);
     return res.status(200).json({
       success: true,
@@ -428,6 +417,7 @@ export const updateOneUser = async (req, res) => {
     });
   }
 };
+
 
 
 
@@ -534,6 +524,125 @@ export const deactivateOneUser = async (req, res) => {
 };
 
 
+export const checkEmail = async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({
+      success: false,
+      message: "Please provide your Email",
+    });
+  }
+
+  try {
+    const user = await getUserByEmail(email);
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "There is no account associated with that email",
+      });
+    }
+
+    // Generate a random 6-digit code including time string
+    const timestamp = Date.now().toString().slice(-3); // Get the last 3 digits of the timestamp
+    const randomPart = Math.floor(100 + Math.random() * 900).toString(); // Get a 3-digit random number
+    const code = timestamp + randomPart; // Combine both parts to form a 6-digit code
+
+
+    await new Email(user, null, code).sendResetPasswordCode();
+    const user1 = await updateUserCode(email, {code:code});
+
+    return res.status(200).json({
+      success: true,
+      message: "Code sent to your email successfully",
+    });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+export const checkCode = async (req, res) => {
+  const { code } = req.body;
+  if (!req.params.email) {
+    return res.status(400).json({
+      success: false,
+      message: "Please provide your Email",
+    });
+  }
+
+  try {
+    const user = await getUserByCode(req.params.email,code);
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "invalid code",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "now you can reset your password",
+    });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+export const ResetPassword = async (req, res) => {
+
+  const user = await getUserByEmail(req.params.email);
+  if (!user) {
+    return res.status(400).json({
+      success: false,
+      message: "There is no account associated with that email",
+    });
+  }
+  if (!user.code) {
+    return res.status(400).json({
+      success: false,
+      message: "No Reset Code",
+    });
+  }
+  const { newPassword, confirmPassword } = req.body;
+  if ( !newPassword || !confirmPassword) {
+    return res.status(400).json({
+      success: false,
+      message: "Please provide newPassword, and confirmPassword",
+    });
+  }
+
+  try {
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "New password and confirm password do not match",
+      });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    await updateUser(user.id, { password: hashedPassword,code:'' });
+
+    return res.status(200).json({
+      success: true,
+      message: "Password changed successfully, Login",
+    });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
 
 
 

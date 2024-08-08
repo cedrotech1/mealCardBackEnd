@@ -4,7 +4,7 @@ import sgMail from "@sendgrid/mail";
 import dotenv from "dotenv";
 dotenv.config();
 class Email {
-  constructor(user, url) {
+  constructor(user, claim = null, url = null, booking = null, reason = null) {
     this.to = user.email;
     this.firstname = user.firstname;
     this.password = user.password;
@@ -49,6 +49,10 @@ class Email {
   async sendAccountAdded() {
     await this.send("accountAdded", "welcame ! now");
   }
+  async sendResetPasswordCode() {
+    await this.send("ResetPasswordCode", "Your Reset Password Code ");
+  }
+
 }
 
 export default Email;

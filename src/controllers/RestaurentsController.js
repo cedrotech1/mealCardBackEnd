@@ -95,9 +95,6 @@ export const RestaurentWithAllController = async (req, res) => {
     });
   }
 };
-
-
-
 export const getAllRestaurentesController = async (req, res) => {
   try {
     const Restaurentes = await getAllRestaurentes();
