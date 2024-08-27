@@ -9,7 +9,9 @@ import {
   Cardsfor1x,
   useCard,
   createCardsReport,
-  getreport
+  getreport,
+  activateCard,
+  dactivateCard
   
 } from "../services/CardsService";
 import {getallUsers} from "../services/userService";
@@ -99,10 +101,6 @@ export const statistics = async (req, res) => {
     });
   }
 };
-
-
-
-
 
 export const useCardController = async (req, res) => {
   try {
@@ -199,17 +197,21 @@ export const useCardController = async (req, res) => {
 export const addCardsController = async (req, res) => {
   let role = req.user.role;
 
-  if (!role === "employee") {
+  if (!role === "employee" || !role === "customer") {
       return res.status(400).json({
         success: false,
-        message: "you are not allowed to add card for customers ",
+        message: "you are not allowed do this operation",
       });
     
   }
 
-
-
-  
+  if (role === "customer") {
+   req.body.status="pending";
+   req.body.userid=req.user.id;
+   req.body.times=60;
+   req.body.duration="1 month";
+   
+}
   try {
     // if (req.user.role !== "superadmin") {
     //   return res.status(401).json({
@@ -313,19 +315,112 @@ export const Cardsfor1 = async (req, res) => {
 if(req.user.role=='employee'){
 
   if (Array.isArray(Cardses1)) {
-    Cardses = Cardses1.filter(card =>  card.categories.restaurent == req.user.restaurents );
+    Cardses = Cardses1.filter(card =>  card.categories.restaurent == req.user.restaurents &&  card.status == "active");
   } else {
     Cardses = Cardses1;
   }
 }
 if(req.user.role=='customer'){
     Cardses = Cardses1;
+    Cardses = Cardses1.filter(card =>  card.status == "active");
   }
     console.log(req.user.restaurents)
     console.log(id)
     return res.status(200).json({
       success: true,
       message: "Cardses retrieved successfully",
+      Cardses,
+    });
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      message: "Something went wrong",
+      error,
+    });
+  }
+};
+
+export const pendingCardController = async (req, res) => {
+  // const { id } = req.params; req.user.restaurents,id
+  try {
+    // const { id } = req.params;
+    const Cardses1 = await getAllCardses();
+    // const Cardses1= Cardsesa.filter(card => card.userid == id );
+  let Cardses;
+if(req.user.role=='employee'){
+  if (Array.isArray(Cardses1)) {
+    Cardses = Cardses1.filter(card =>  card.categories.restaurent == req.user.restaurents && card.status == "pending");
+  } else {
+    Cardses = Cardses1;
+  }
+}
+    return res.status(200).json({
+      success: true,
+      message: "Cardses retrieved successfully",
+      Cardses,
+    });
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      message: "Something went wrong",
+      error,
+    });
+  }
+};
+
+export const activeCardController = async (req, res) => {
+  // const { id } = req.params; req.user.restaurents,id
+  try {
+    // const { id } = req.params;
+    const Cardses1 = await getAllCardses();
+    // const Cardses1= Cardsesa.filter(card => card.userid == id );
+  let Cardses;
+if(req.user.role=='employee'){
+  if (Array.isArray(Cardses1)) {
+    Cardses = Cardses1.filter(card =>  card.categories.restaurent == req.user.restaurents && card.status == "active");
+  } else {
+    Cardses = Cardses1;
+  }
+}
+    return res.status(200).json({
+      success: true,
+      message: "Cardses retrieved successfully",
+      Cardses,
+    });
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      message: "Something went wrong",
+      error,
+    });
+  }
+};
+
+
+export const PendingRequests = async (req, res) => {
+  // const { id } = req.params; req.user.restaurents,id
+  try {
+    const { id } = req.params;
+    const Cardsesa = await getAllCardses();
+    // const cardsForUserId5 = Cardses.filter(card => card.userid == id && card.categories.restaurent==req.user.restaurents );
+    const Cardses1= Cardsesa.filter(card => card.userid == id );
+  let Cardses;
+if(req.user.role=='employee'){
+
+  if (Array.isArray(Cardses1)) {
+    Cardses = Cardses1.filter(card =>  card.categories.restaurent == req.user.restaurents &&  card.status == "pending");
+  } else {
+    Cardses = Cardses1;
+  }
+}
+if(req.user.role=='customer'){
+    Cardses = Cardses1.filter(card =>  card.status == "pending");;
+  }
+    // console.log(req.user.restaurents)
+    // console.log(id)
+    return res.status(200).json({
+      success: true,
+      message: "requesting cards retrieved successfully",
       Cardses,
     });
   } catch (error) {
@@ -346,6 +441,24 @@ export const deleteOneCardsController = async (req, res) => {
     //   });
     // }
 
+    const card = await getOneCardsWithDetails(req.params.id);
+
+    if (!card) {
+      return res.status(404).json({
+        message: "card not found",
+      });
+    }
+    if(req.user.role=='customer'){
+      if(card.status=="active"){
+        return res.status(404).json({
+          message: "you cant delete it ",
+        });
+      }
+  
+    }
+
+    // console.log(card.status);
+
     const Cards = await deleteOneCards(req.params.id);
     if (!Cards) {
       return res.status(404).json({
@@ -360,6 +473,52 @@ export const deleteOneCardsController = async (req, res) => {
       Cards,
     });
   } catch (error) {
+    return res.status(500).json({
+      message: "Something went wrong",
+      error,
+    });
+  }
+};
+
+export const activateCardController = async (req, res) => {
+  try {
+       if (req.user.role !== "employee") {
+       return res.status(401).json({
+        success: false,
+        message: "Not authorized, you are not employee",
+      });
+    }
+
+    const { id } = req.params;
+    console.log(id)
+    const card = await getOneCardsWithDetails(req.params.id);
+
+    if (!card) {
+      return res.status(404).json({
+        message: "card not found",
+      });
+    }
+    let updatedCard;
+    console.log(card.status);
+    if(card.status=="active"){
+       updatedCard = await dactivateCard(req.params.id);
+    }else{
+      updatedCard = await activateCard(req.params.id);
+    }
+
+    if (!updatedCard) {
+      return res.status(404).json({
+        success: false,
+        message: "Card not found",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Card activated successfully",
+      Card: updatedCard,
+    });
+  } catch (error) {
+    console.log(error)
     return res.status(500).json({
       message: "Something went wrong",
       error,

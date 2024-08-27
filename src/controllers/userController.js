@@ -397,6 +397,7 @@ export const updateOneUser = async (req, res) => {
 
         // Assign the image URL to req.body.image
         req.body.image = image.url;
+        console.log(req.body.image)
       } catch (error) {
         console.error('Error uploading image:', error);
         // Handle error appropriately

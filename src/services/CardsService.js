@@ -136,6 +136,24 @@ export const updateOneResto = async (id, resto) => {
   return null;
 };
 
+export const activateCard = async (id) => {
+  const restoToUpdate = await CardsModel.findOne({ where: { id } });
+  if (restoToUpdate) {
+    await CardsModel.update({status:"active"}, { where: { id } });
+    return restoToUpdate;
+  }
+  return null;
+};
+
+export const dactivateCard = async (id) => {
+  const restoToUpdate = await CardsModel.findOne({ where: { id } });
+  if (restoToUpdate) {
+    await CardsModel.update({status:"pending"}, { where: { id } });
+    return restoToUpdate;
+  }
+  return null;
+};
+
 export const useCard = async (id, resto) => {
   const restoToUpdate = await CardsModel.findOne({ where: { id } });
   if (restoToUpdate) {

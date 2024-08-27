@@ -1294,6 +1294,69 @@ const options = {
         },
       },
     },
+    "/api/v1/card/myrequestcard/{id}": {
+      get: {
+        tags: ["cards"],
+        summary: "Get a myrequestcard",
+        description: "Get a myrequestcard",
+        operationId: "getOnemyrequestcard1",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            description: "card's id",
+            required: true,
+            schema: {
+              type: "string",
+            },
+          },
+        ],
+    
+        responses: {
+          200: {
+            description: "cards deleted successfully",
+          },
+          400: {
+            description: "Bad request",
+          },
+          401: {
+            description: "Unauthorized",
+          },
+          404: {
+            description: "User not found",
+          },
+          500: {
+            description: "Something went wrong",
+          },
+        },
+      },
+    },
+    "/api/v1/card/pending": {
+      get: {
+        tags: ["cards"],
+        summary: "Get a pending cards",
+        description: "Get a pending cards",
+        operationId: "pendingcards",
+  
+        responses: {
+          200: {
+            description: "pending cards successfully",
+          },
+          400: {
+            description: "Bad request",
+          },
+          401: {
+            description: "Unauthorized",
+          },
+          404: {
+            description: "User not found",
+          },
+          500: {
+            description: "Something went wrong",
+          },
+        },
+      },
+    },
     "/api/v1/card/delete/{id}": {
       delete: {
         tags: ["cards"],
@@ -1346,6 +1409,8 @@ const options = {
                
                 userid: "2",
                 times: "30",
+                category:"3",
+                duration:"2"
                 
               },
             },
@@ -1462,6 +1527,45 @@ const options = {
         responses: {
           200: {
             description: "cards deleted successfully",
+          },
+          400: {
+            description: "Bad request",
+          },
+          401: {
+            description: "Unauthorized",
+          },
+          404: {
+            description: "User not found",
+          },
+          500: {
+            description: "Something went wrong",
+          },
+        },
+      },
+    },
+    
+    "/api/v1/card/activate/{id}": {
+      put: {
+        tags: ["cards"],
+        summary: "activate a cards",
+        description: "activate a cards",
+        operationId: "activateCard",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            description: "card's id",
+            required: true,
+            schema: {
+              type: "string",
+            },
+          },
+        ],
+      
+    
+        responses: {
+          200: {
+            description: "cards activated successfully",
           },
           400: {
             description: "Bad request",
